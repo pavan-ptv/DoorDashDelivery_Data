@@ -13,11 +13,11 @@ Here are the basic assumptions for the project
 5.Notifications regarding the processing outcome will be sent via **Amazon SNS**
 
 ## Tech Stack
-*AWS Lambda
-*Amazon SNS
-*AWS CodeBuild (for CI/CD)
-*GitHub (for Version Control)
-*Python (Pandas)
+* AWS Lambda
+* Amazon SNS
+* AWS CodeBuild (for CI/CD)
+* GitHub (for Version Control)
+* Python (Pandas)
 
 ## Project Design
 ![DoorDashDelivery](Images/DoorDashDeliveryDesign.drawio.png)
