@@ -1,5 +1,3 @@
-Package              Version
--------------------- -----------
 aiobotocore          2.15.2
 aiohappyeyeballs     2.4.3
 aiohttp              3.10.10
