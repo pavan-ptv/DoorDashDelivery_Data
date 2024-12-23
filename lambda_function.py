@@ -18,7 +18,7 @@ def lambda_handler(event, context):
     s3_client = boto3.client('s3')
     bucket_list = s3_client.list_buckets()
 
-    record = event['Records']
+    record = event['Records'][0]
     region_name = record['awsRegion']
     event_name = record['eventName']
     bucket_name = record['s3']['bucket']['name']
