@@ -11,6 +11,7 @@ from datetime import date
 
 def lambda_handler(event, context):
 
+    print("EVENT RECEIVED: ",event)
     print("----*-S3 upload file event triggered-*----")
 
     #S3 file read
