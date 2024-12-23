@@ -18,37 +18,35 @@ def lambda_handler(event, context):
     s3_client = boto3.client('s3')
     bucket_list = s3_client.list_buckets()
 
-    Records = event['Records']
-    print(Records)
-    for record in Records:
-        region_name = record['awsRegion']
-        event_name = record['eventName']
-        bucket_name = record['s3']['bucket']['name']
-        bucket_arn = record['s3']['bucket']['arn']
-        object_name = record['s3']['object']['key']
-        object_size = record['s3']['object']['size']
-        print(bucket_name)
-        print(object_name)
-        response = s3_client.get_object(
-            Bucket = bucket_name,
-            Key = object_name
-            )
-        file_content = response['Body'].read().decode('windows-1252')
-        data = pd.read_csv(StringIO(file_content))
-        print(data.head())
-        country_list = list(data['Country_Name'].unique())
-        for country in country_list:
-            df = data[data['Country_Name'] == country]
-            df.to_csv(f'/tmp/{country}_df.csv',index = False)
+    record = event['Records']
+    region_name = record['awsRegion']
+    event_name = record['eventName']
+    bucket_name = record['s3']['bucket']['name']
+    bucket_arn = record['s3']['bucket']['arn']
+    object_name = record['s3']['object']['key']
+    object_size = record['s3']['object']['size']
+    print(bucket_name)
+    print(object_name)
+    response = s3_client.get_object(
+        Bucket = bucket_name,
+        Key = object_name
+        )
+    file_content = response['Body'].read().decode('windows-1252')
+    data = pd.read_csv(StringIO(file_content))
+    print(data.head())
+    country_list = list(data['Country_Name'].unique())
+    for country in country_list:
+        df = data[data['Country_Name'] == country]
+        df.to_csv(f'/tmp/{country}_df.csv',index = False)
 
-            for file in os.listdir('/tmp/'):
-                if os.path.isfile(os.path.join('/tmp/',file)) and os.path.splitext(file)[1] == '.csv':
-                    with open(os.path.join('/tmp/',file),'rb') as file_object:
-                        s3_client.upload_fileobj(
-                            Fileobj = file_object,
-                            Bucket = bucket_name,
-                            Key = f"output/{file}"
-                        )        
+        for file in os.listdir('/tmp/'):
+            if os.path.isfile(os.path.join('/tmp/',file)) and os.path.splitext(file)[1] == '.csv':
+                with open(os.path.join('/tmp/',file),'rb') as file_object:
+                    s3_client.upload_fileobj(
+                        Fileobj = file_object,
+                        Bucket = bucket_name,
+                        Key = f"output/{file}"
+                    )        
     return {
         'statusCode' : 200,
         'body' : json.dumps({'event type':'data flow completed'})
