@@ -19,7 +19,7 @@ def lambda_handler(event, context):
     bucket_list = s3_client.list_buckets()
 
     Records = event['Records']
-
+    print(Records)
     for record in Records:
         region_name = record['awsRegion']
         event_name = record['eventName']
@@ -27,7 +27,8 @@ def lambda_handler(event, context):
         bucket_arn = record['s3']['bucket']['arn']
         object_name = record['s3']['object']['key']
         object_size = record['s3']['object']['size']
-
+        print(bucket_name)
+        print(object_name)
         response = s3_client.get_object(
             Bucket = bucket_name,
             Key = object_name
