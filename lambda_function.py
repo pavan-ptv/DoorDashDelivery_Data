@@ -53,10 +53,10 @@ def lambda_handler(event, context):
         Prefix = 'output/'
     )
     contents = list_response['Contents']
-    today = datetime.datetime.strftime(datetime.today(),'%Y%m%d')
+    today = datetime.strftime(datetime.today(),'%Y%m%d')
     files_modified_today = 0
     for content in contents[1:]:
-        if datetime.datetime.strftime(content['LastModified'],'%Y%m%d') == today:
+        if datetime.strftime(content['LastModified'],'%Y%m%d') == today:
             files_modified_today += 1
     if files_modified_today == len(country_list):
         sns_client.publish(TopicArn = 'arn:aws:sns:us-east-1:891612543241:DoorDashDelivery',
