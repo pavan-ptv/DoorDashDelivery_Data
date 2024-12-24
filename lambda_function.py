@@ -6,7 +6,7 @@ from botocore.config import Config
 from io import StringIO
 import io
 import os
-from datetime import date
+from datetime import date,datetime
 
 
 def lambda_handler(event, context):
@@ -16,6 +16,7 @@ def lambda_handler(event, context):
 
     #S3 file read
     s3_client = boto3.client('s3')
+    sns_client = boto3.client('sns')
     bucket_list = s3_client.list_buckets()
 
     record = event['Records'][0]
@@ -46,7 +47,25 @@ def lambda_handler(event, context):
                         Fileobj = file_object,
                         Bucket = bucket_name,
                         Key = f"output/{file}"
-                    )        
+                    )
+    list_response = s3_client.list_objects(
+        Bucket = bucket_name,
+        Prefix = 'output/'
+    )
+    contents = list_response['Contents']
+    today = datetime.datetime.strftime(datetime.today(),'%Y%m%d')
+    files_modified_today = 0
+    for content in contents[1:]:
+        if datetime.datetime.strftime(content['LastModified'],'%Y%m%d') == today:
+            files_modified_today += 1
+    if files_modified_today == len(country_list):
+        sns_client.publish(TopicArn = 'arn:aws:sns:us-east-1:891612543241:DoorDashDelivery',
+                        Message = f'DoorDashDelivery data is processed. Number of files Created {len(country_list)}.',
+                        Subject = "Delivery Data Processed")
+    else:
+        sns_client.publish(TopicArn = 'arn:aws:sns:us-east-1:891612543241:DoorDashDelivery',
+                        Message = f'DoorDashDelivery data is processed Partially . Number of files Created {files_modified_today}.',
+                        Subject = "Delivery Data Processed")
     return {
         'statusCode' : 200,
         'body' : json.dumps({'event type':'data flow completed'})
